@@ -1,0 +1,162 @@
+<!--The following code uses a package called mui
+You can find the link here: https://github.com/dcloudio/mui -->
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Main Menu</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+	<!--standard mui.css-->
+	<link rel="stylesheet" href="css/mui.min.css">
+	<link rel="stylesheet" type="text/css" href="css/icons-extra.css" />
+	<!--App customized css-->
+	<link rel="stylesheet" type="text/css" href="css/app.css"/>
+	<style>
+	.flex-container {
+		display: -webkit-box;
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-flow: row wrap;
+		justify-content: space-between;
+		text-align: center;
+	}
+	
+	.mui-content-padded {
+		padding: 10px;
+	}
+	
+	.mui-content-padded a {
+		margin: 3px;
+		width: 50px;
+		height: 50px;
+		display: inline-block;
+		text-align: center;
+		background-color: #fff;
+		border: 1px solid #ddd;
+		border-radius: 25px;
+		background-clip: padding-box;
+	}
+	
+	.mui-content-padded a .mui-icon-extra {
+		margin-top: 12px;
+	}
+	
+	.mui-spinner,
+	.mui-spinner-white {
+		margin-top: 12px
+	}
+	
+	.active .mui-spinner-indicator {
+		background: #007AFF;
+	}
+	
+	.mui-content a {
+		color: #8F8F94;
+	}
+	
+	.mui-content a.active {
+		color: #007aff;
+	}
+</style>
+</head>
+
+<body>
+  <header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title"> Menu </h1>
+  </header>
+  <table style="width:100%; margin-top: 100px">
+    <tr>
+      <th>
+        <div class="mui-content" style="margin:auto; width:50%">
+          <div class="mui-content-padded">
+            <div class="flex-container">
+              <a id="schedule" onclick="location.href='schedule.html'"><span class="mui-icon-extra mui-icon-extra-calendar"></span></a>
+              <!--a><span class="mui-icon-extra mui-icon-extra-cate"></span></a-->
+            </div>
+          </div>
+        </div>
+      </th>
+      <th>
+        <div class="mui-content" style="margin:auto; width:50%">
+          <div class="mui-content-padded">
+            <div class="flex-container">
+              <!--a><span class="mui-icon-extra mui-icon-extra-calendar"></span></a-->
+              <a onclick="httpGetAsync('http://128.54.240.204/feed', null)"><span class="mui-icon-extra mui-icon-extra-cate"></span></a>
+            </div>
+          </div>
+        </div>
+      </th>
+    </tr>
+    <tr>
+      <td style="text-align: center;">
+        <p> Scehdule Your<br> Pets' Meals</p> 
+      </td>
+      <td style="text-align: center;">
+        <p> Feed Your <br> Pet Right Now</p>
+      </td>
+    </tr>
+  </table>
+  <script src="js/mui.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    function httpGetAsync(theUrl, callback)
+    {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+        {
+          console.log("in here");
+          callback1();
+        }
+      }
+      console.log("in there");
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.send(null);
+  }
+
+  function callback1()
+  {
+    alert("Your pet has been fed");
+  }
+
+  mui.init({
+			swipeBack: true //Enable right slide off function
+		});
+  var active = null,
+  lastid, span;
+  mui(".mui-content").on("tap", "a", function() {
+   var id = this.getAttribute("id");
+   if(!active) {
+    this.classList.add("active");
+    if(id) {
+     span = this.querySelector("span");
+     span.classList.remove("mui-" + id);
+     span.classList.add("mui-" + id + "-filled");
+   }
+   active = this;
+ } else {
+  active.classList.remove("active");
+  if(lastid) {
+   span.classList.remove("mui-" + lastid + "-filled");
+   span.classList.add("mui-" + lastid);
+ }
+
+ this.classList.add("active");
+ if(id) {
+   span = this.querySelector("span");
+   span.classList.remove("mui-" + id);
+   span.classList.add("mui-" + id + "-filled");
+ }
+
+ active = this;
+}
+lastid = id;
+});
+</script>
+</body>
+
+</html>

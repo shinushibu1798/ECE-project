@@ -1,0 +1,293 @@
+<!-- Citations:
+  The code from the editable table is from -  https://codepen.io/ashblue/pen/mCtuA
+-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Schedule</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <!--standard mui.css-->
+  <link rel="stylesheet" href="css/mui.min.css">
+  <link rel="stylesheet" type="text/css" href="css/icons-extra.css" />
+  <!--App customized css-->
+  <link rel="stylesheet" type="text/css" href="css/app.css"/>
+  <link rel="stylesheet prefetch" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
+  <link rel="stylesheet prefetch" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <style>
+  .flex-container {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row wrap;
+    justify-content: space-between;
+    text-align: center;
+  }
+  
+  .mui-content-padded {
+    padding: 10px;
+  }
+  
+  .mui-content-padded a {
+    margin: 3px;
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    text-align: center;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    background-clip: padding-box;
+  }
+  
+  .mui-content-padded a .mui-icon-extra {
+    margin-top: 12px;
+  }
+  
+  .mui-spinner,
+  .mui-spinner-white {
+    margin-top: 12px
+  }
+  
+  .active .mui-spinner-indicator {
+    background: #007AFF;
+  }
+  
+  .mui-content a {
+    color: #8F8F94;
+  }
+  
+  .mui-content a.active {
+    color: #007aff;
+  }
+
+  .table-editable {
+    position: relative;
+
+    .glyphicon {
+      font-size: 20px;
+    }
+  }
+
+  .table-remove {
+    color: #700;
+    cursor: pointer;
+
+    &:hover {
+      color: #f00;
+    }
+  }
+
+  .table-up, .table-down {
+    color: #007;
+    cursor: pointer;
+
+    &:hover {
+      color: #00f;
+    }
+  }
+
+  .table-add {
+    color: #070;
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 0;
+
+    &:hover {
+      color: #0b0;
+    }
+  }
+</style>
+</head>
+<body>
+  <header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title"> Schedule </h1>
+  </header>
+  <body>
+    <p>Current Schedule</p>
+    <table style="position: relative; top: 80px; width: 100%; left:20px; visibility:hidden;" >
+      <tr>
+        <th>Time</th>
+      </tr>
+      <tr>
+        <td id="1"></td>
+      </tr>
+      <tr>
+        <td id="2"></td>
+      </tr>
+      <tr>
+        <td id="3"></td>
+      </tr>
+      <tr>
+        <td id="4"></td>
+      </tr>
+      <tr>
+        <td id="5"></td>
+      </tr>
+    </table>
+    <div class="container" style="position: relative; top: 100px; width: 100%">
+
+      <div id="table" class="table-editable">
+        <span class="table-add glyphicon glyphicon-plus"></span>
+        <table class="table">
+          <tr>
+            <th>Time</th>
+            <th></th>
+          </tr>
+          <tr>
+            <td contenteditable="true">Enter a time</td>
+            <td>
+              <span class="table-remove glyphicon glyphicon-remove"></span>
+            </td>
+            <td>
+              <span class="table-up glyphicon glyphicon-arrow-up"></span>
+              <span class="table-down glyphicon glyphicon-arrow-down"></span>
+            </td>
+          </tr>
+          <!-- This is our clonable table line -->
+          <tr class="hide">
+            <td contenteditable="true">Enter a time</td>
+            <td>
+              <span class="table-remove glyphicon glyphicon-remove"></span>
+            </td>
+            <td>
+              <span class="table-up glyphicon glyphicon-arrow-up"></span>
+              <span class="table-down glyphicon glyphicon-arrow-down"></span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <button id="export-btn" class="btn btn-primary">Submit</button>
+      <p id="export"></p>
+    </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
+    <script>
+      if(window.localStorage.getItem('check')!=null)
+      {
+        var check = parseInt(window.localStorage.getItem('check'));
+        console.log(check);
+      }
+      else
+      {
+        var check = 1;
+      }
+      if(window.localStorage.getItem('time')!=null)
+      { 
+        console.log(window.localStorage.getItem('time'));
+      }
+      var $TABLE = $('#table');
+      var $BTN = $('#export-btn');
+      var $EXPORT = $('#export');
+
+      $('.table-add').click(function () {
+        if(check!= 5){
+          var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
+          $TABLE.find('table').append($clone);
+          check=check+1;
+        }
+        else
+          alert("You have reached the limit of the number of times you can feed your pet.")
+      });
+
+      $('.table-remove').click(function () {
+        $(this).parents('tr').detach();
+        if(check!= 0){
+          check = check -1;
+        }
+      });
+
+      $('.table-up').click(function () {
+        var $row = $(this).parents('tr');
+  if ($row.index() === 1) return; // Don't go above the header
+  $row.prev().before($row.get(0));
+});
+
+      $('.table-down').click(function () {
+        var $row = $(this).parents('tr');
+        $row.next().after($row.get(0));
+      });
+
+// A few jQuery helpers for exporting only
+jQuery.fn.pop = [].pop;
+jQuery.fn.shift = [].shift;
+
+$BTN.click(function () {
+  var $rows = $TABLE.find('tr:not(:hidden)');
+  var headers = [];
+  var data = [];
+  
+  // Get the headers (add special header logic here)
+  $($rows.shift()).find('th:not(:empty)').each(function () {
+    headers.push($(this).text().toLowerCase());
+  });
+  
+  // Turn all existing rows into a loopable array
+  $rows.each(function () {
+    var $td = $(this).find('td');
+    var h = {};
+    
+    // Use the headers from earlier to name our hash keys
+    headers.forEach(function (header, i) {
+      h[header] = $td.eq(i).text();
+      console.log(h);   
+    });
+    
+    data.push(h);
+  });
+  
+  // Output the result
+  $EXPORT.text(JSON.stringify(data));
+  localStorage.setItem("time", JSON.stringify(data));
+  localStorage.setItem("check", check);
+});
+</script>      
+</body>
+<script src="js/mui.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+  mui.init({
+      swipeBack: true //Enable right slide off function
+    });
+  var active = null,
+  lastid, span;
+  mui(".mui-content").on("tap", "a", function() {
+   var id = this.getAttribute("id");
+   if(!active) {
+    this.classList.add("active");
+    if(id) {
+     span = this.querySelector("span");
+     span.classList.remove("mui-" + id);
+     span.classList.add("mui-" + id + "-filled");
+   }
+   active = this;
+ } else {
+  active.classList.remove("active");
+  if(lastid) {
+   span.classList.remove("mui-" + lastid + "-filled");
+   span.classList.add("mui-" + lastid);
+ }
+
+ this.classList.add("active");
+ if(id) {
+   span = this.querySelector("span");
+   span.classList.remove("mui-" + id);
+   span.classList.add("mui-" + id + "-filled");
+ }
+
+ active = this;
+}
+lastid = id;
+});
+</script>
+</body>
+
+</html>
